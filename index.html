@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Мультиварка: рецепти і покупки</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E7566"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#EEF3F0;--card:#fff;--ink:#17302B;--mute:#5C726C;--line:#D3DEDA;--acc:#0E7566;--on:#fff;--bad:#B3402F;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101A18;--card:#182522;--ink:#E4EFEB;--mute:#92A8A1;--line:#2A3C38;--acc:#4FC3AE;--on:#07201B;--bad:#F08C7B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101A18;--card:#182522;--ink:#E4EFEB;--mute:#92A8A1;--line:#2A3C38;--acc:#4FC3AE;--on:#07201B;--bad:#F08C7B;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 "Avenir Next","Segoe UI",Roboto,system-ui,sans-serif;padding:12px 12px 88px;max-width:900px;margin-inline:auto}
+h2,h3{margin:0}h2{font-size:22px}h3{font-size:15px;margin-bottom:4px}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 8px}
+.hint{color:var(--mute);font-size:14px;margin:6px 2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 12px}
+select,input[type=text],input:not([type]),input[type=number]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-height:40px;min-width:0}
+#sel{flex:1;font-weight:600}
+.k{display:flex;align-items:center;gap:8px}.k b{font-size:30px;color:var(--acc);letter-spacing:-.5px}
+.b{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;min-height:40px;cursor:pointer}
+.b.p{background:var(--acc);color:var(--on);border-color:var(--acc);font-weight:600}.b.d{color:var(--bad)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.ir{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.ir:first-child,.pr:first-of-type{border-top:0}
+.ir input[type=checkbox]{width:22px;height:22px;accent-color:var(--acc)}
+.am{display:flex;align-items:center;gap:4px}.am input{width:74px;text-align:right}.am i{font-style:normal;color:var(--mute);font-size:14px;min-width:34px}
+.off .nm{text-decoration:line-through;opacity:.5}
+.x{border:0;background:none;color:var(--mute);font-size:22px;width:32px;height:32px;cursor:pointer}
+.add{display:flex;flex-wrap:wrap;gap:8px}.add input:not([type=number]){flex:1;min-width:130px}.add input[type=number]{width:80px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:start}
+.cols .card{margin:0}
+.cnt{color:var(--acc);font-weight:700}
+.pr{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}
+.nm{flex:1;min-width:0;font-size:15px;overflow-wrap:anywhere}.nm small{display:block;color:var(--mute);font-size:12.5px}
+.got .nm{text-decoration:line-through;opacity:.5}
+.sw{position:relative;flex:none;width:36px;height:22px}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;width:100%;height:100%;cursor:pointer}
+.sw span{position:absolute;inset:0;border-radius:11px;background:var(--line);transition:background .15s}
+.sw span:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw input:checked+span{background:var(--acc)}.sw input:checked+span:after{transform:translateX(14px)}
+.sw input:focus-visible+span,.b:focus-visible,.tk:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tk{flex:none;width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:none;color:transparent;font-size:16px;cursor:pointer;padding:0}
+.tk[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--on)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;background:var(--card);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;font:inherit;font-weight:600;border:0;border-radius:10px;min-height:44px;background:none;color:var(--mute);cursor:pointer}
+nav button[aria-current="true"]{background:var(--acc);color:var(--on)}
+:root{--tint:#E3F0EC;--bg:#F2F6F4;--line:#DCE5E1}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--tint:#213631;--bg:#0F1816}}
+:root[data-theme="dark"]{--tint:#213631;--bg:#0F1816}
+body{font-size:15px;padding-bottom:92px}
+.card{border-radius:18px;padding:6px 14px;border-color:transparent;box-shadow:0 1px 2px rgba(0,0,0,.05),0 6px 16px -8px rgba(0,0,0,.12)}
+.card.add{padding:12px}
+select,input:not([type=checkbox]){border:0;background:var(--tint);border-radius:12px;min-height:38px;padding:7px 12px;font-size:15px}
+.hd{margin:2px 2px 10px}
+#sel{flex:1;font-size:16px;font-weight:600}
+.k b{font-size:18px;background:var(--tint);color:var(--acc);padding:4px 12px;border-radius:999px;letter-spacing:0}
+.hint{font-size:13px;margin:4px 4px 8px}
+.b{border:0;background:var(--tint);color:var(--acc);font-weight:600;font-size:14px;border-radius:12px;min-height:40px;padding:8px 14px;transition:transform .1s}
+.b:active{transform:scale(.97)}
+.b.p{background:var(--acc);color:var(--on)}
+.b.d{background:none;color:var(--bad);font-weight:500}
+.k .b{background:none;color:var(--mute);font-weight:500;padding:8px}
+.b[data-a=shop]{flex:1 1 auto}
+.row{gap:6px;margin:4px 0 12px}
+.ir{grid-template-columns:22px 1fr auto;gap:10px;padding:6px 0}.ed .ir{grid-template-columns:22px 1fr auto 26px}
+.ir input[type=checkbox]{appearance:none;-webkit-appearance:none;margin:0;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--mute);background:none;cursor:pointer}
+.ir input[type=checkbox]:checked{background:var(--acc);border-color:var(--acc);box-shadow:inset 0 0 0 3px var(--card)}
+.am{gap:6px}.am input{width:62px;padding:5px 8px;min-height:32px;border-radius:10px;font-weight:600}
+.am i{min-width:30px;font-size:13px}
+.x{width:26px;height:26px;font-size:18px;opacity:.55}
+h3{font-size:14px;color:var(--acc);margin:4px 0 2px}
+.cols{display:block;column-width:160px;column-gap:10px}
+.cols .card{padding:6px 12px;margin:0 0 10px;break-inside:avoid}
+.pr{padding:6px 0}
+.sw{width:34px;height:20px}
+.sw span{border-radius:10px;background:var(--line);background:color-mix(in srgb,var(--mute) 35%,transparent)}
+.sw span:after{top:2px;left:2px;width:16px;height:16px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sw input:checked+span{background:var(--acc)}
+.tk{width:28px;height:28px;border-width:1.5px;font-size:14px}
+nav{border:0;border-radius:20px 20px 0 0;box-shadow:0 -6px 20px -10px rgba(0,0,0,.3);gap:6px}
+nav button{min-height:42px;border-radius:14px;font-size:15px}
+.tb{flex-wrap:nowrap;gap:5px;margin:2px 0 10px}
+.tb .b{flex:1 1 auto;padding:6px 8px;font-size:13px;min-height:36px;white-space:nowrap}
+.addbar{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;padding:8px 12px;background:var(--card);border-top:1px solid var(--line);z-index:5}
+.addbar input{flex:1}.addbar select{max-width:42%}
+.addbar .b{width:44px;padding:0;font-size:22px;line-height:1}
+.addbar.two{flex-direction:column;gap:6px}
+.ar{display:flex;gap:6px}.ar input{flex:1;min-width:0}
+.ar input[type=number]{flex:none;width:68px}.ar select{flex:none;width:82px}
+.ar .b:not(.p){width:auto;padding:0 14px;font-size:14px}
+.st{padding:10px 14px}.st ol{margin:4px 0 10px;padding-left:20px}.st li{padding:3px 0}
+.st textarea{display:block;width:100%;font:inherit;color:var(--ink);background:var(--tint);border:0;border-radius:12px;padding:10px 12px;margin:6px 0 10px;resize:vertical}
+.st input{display:block;width:100%;margin:6px 0}
+.sr{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.sr:first-child{border-top:0}
+.sr b{flex:0 0 36%;min-width:0;font-size:15px}.sr span{flex:1;display:flex;flex-wrap:wrap;gap:4px}
+.sr i{font-style:normal;font-size:12.5px;background:var(--tint);color:var(--acc);border-radius:999px;padding:2px 9px}
+.sf{flex:1;display:flex;flex-direction:column;gap:6px}.sf input{width:100%}
+#gf{flex:1;font-weight:600;font-size:16px}
+.st textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+:root{--sw-on:#2E9E4F;--sw-off:#D8453B}
+.sw span{background:var(--sw-off)}
+.sw input:checked+span{background:var(--sw-on)}
+.sw span:after{background:#14201D;box-shadow:0 0 0 1.5px #fff}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav><button data-tab="p">Покупки</button><button data-tab="r">Рецепти</button><button data-tab="g">Довідка</button></nav>
+<script src="firebase-config.js"></script>
+<script>
+const U=['г','кг','мл','л','шт','ст. л.','ч. л.','зубч.'];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const I=(n,a,u,p)=>({n,a,u,on:true,p:p===undefined?n:p});
+const CAT={'М’ясо і риба':['Курячі стегна','Куряче філе','Свинина','Фарш','Риба'],
+'Овочі':['Картопля','Морква','Цибуля','Часник','Болгарський перець','Помідори','Капуста'],
+'Бакалія':['Рис','Гречка','Макарони','Томатний соус','Олія','Сіль і спеції'],
+'Молочне й яйця':['Молоко','Сметана','Сир','Яйця','Масло']};
+function seed(){
+ const items=[];for(const c in CAT)CAT[c].forEach(n=>items.push({id:uid(),name:n,cat:c,buy:false,got:false,note:'',o:items.length}));
+ return{tab:'p',cur:'r1',only:false,edit:false,cf:null,items,recipes:[
+ {id:'r1',name:'Курячі стегна з овочами',k:1,note:'Орієнтовно: режим «Тушкування», 50–60 хв. Звірте з вашою книгою.',ing:[I('Курячі стегна',800,'г'),I('Картопля',600,'г'),I('Морква',150,'г'),I('Болгарський перець',150,'г'),I('Цибуля',100,'г'),I('Томатний соус',100,'г'),I('Олія',2,'ст. л.'),I('Сіль і спеції',2,'ч. л.'),I('Вода',100,'мл','')]},
+ {id:'r2',name:'Плов з куркою',k:1,note:'Орієнтовно: режим «Плов», близько години. Звірте з вашою книгою.',ing:[I('Рис',300,'г'),I('Курячі стегна',500,'г'),I('Морква',200,'г'),I('Цибуля',150,'г'),I('Часник',4,'зубч.'),I('Олія',4,'ст. л.'),I('Сіль і спеції',2,'ч. л.'),I('Вода',600,'мл','')]},
+ {id:'r3',name:'Гречка зі свининою',k:1,note:'Орієнтовно: режим «Гречка» або «Тушкування». Звірте з вашою книгою.',ing:[I('Гречка',250,'г'),I('Свинина',400,'г'),I('Цибуля',100,'г'),I('Морква',100,'г'),I('Олія',2,'ст. л.'),I('Сіль і спеції',1,'ч. л.'),I('Вода',500,'мл','')]}]};
+}
+let S;try{S=JSON.parse(localStorage.getItem('mv1'))}catch(e){}
+if(!S||!S.recipes)S=seed();
+const ST={
+r1:'Стегна обсушіть, посоліть і присипте спеціями.\nКартоплю наріжте кубиками, моркву — півколами, перець — смужками, цибулю — півкільцями.\nУ чашу влийте олію, викладіть цибулю й моркву та обсмажте 5–7 хв, помішуючи.\nДодайте стегна й обсмажте з обох боків ще кілька хвилин.\nВикладіть картоплю та перець, посоліть, влийте томатний соус, розведений водою.\nЗакрийте кришку й тушкуйте 50–60 хв. Перед подачею залиште на підігріві 10 хв.',
+r2:'Рис промийте до прозорої води. Моркву наріжте соломкою, цибулю — півкільцями.\nУ чашу влийте олію й обсмажте стегна 8–10 хв до золотистої скоринки.\nДодайте цибулю та моркву, смажте ще 5 хв.\nВсипте спеції й сіль, додайте зубчики часнику цілими.\nРівним шаром викладіть рис, не перемішуючи, і обережно залийте гарячою водою.\nЗакрийте кришку й готуйте на режимі «Плов» (близько години). Наприкінці перемішайте й залиште на підігріві 10 хв.',
+r3:'Свинину наріжте невеликими шматками, цибулю — дрібно, моркву натріть.\nУ чашу влийте олію й обсмажте м’ясо 10 хв, помішуючи.\nДодайте цибулю з морквою, смажте ще 5–7 хв.\nГречку переберіть, промийте й висипте до м’яса, посоліть.\nЗалийте водою, перемішайте й закрийте кришку.\nГотуйте на режимі «Гречка» або «Тушкування» до сигналу, потім залиште на підігріві 10 хв.'};
+S.recipes.forEach(r=>{if(r.steps===undefined)r.steps=ST[r.id]||''});
+S.items.forEach((i,n)=>{if(i.o===undefined)i.o=n});
+if(!S.sp)S.sp=[{id:'s1',n:'Лавровий лист',d:['суп','м’ясо']},{id:'s2',n:'Чорний перець',d:['м’ясо','суп','риба','салат']},{id:'s3',n:'Паприка',d:['м’ясо','птиця','суп']},{id:'s4',n:'Кріп',d:['суп','риба','салат']},{id:'s5',n:'Базилік',d:['салат','соуси']},{id:'s6',n:'Куркума',d:['птиця','гарнір']}];
+const save=()=>{try{localStorage.setItem('mv1',JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=x=>x>=10?Math.round(x):Math.round(x*10)/10;
+const K=k=>String(Math.round(k*100)/100).replace('.',',');
+const cur=()=>S.recipes.find(r=>r.id===S.cur)||S.recipes[0];
+const sp=it=>{window.SYNC&&SYNC.put(it)},sd=id=>{window.SYNC&&SYNC.del(id)};
+const nxt=()=>Math.max(0,...S.items.map(i=>i.o||0))+1;
+const gen=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(12));return[...r].map(x=>a[x%a.length]).join('')};
+const norm=s=>String(s).toUpperCase().replace(/[^A-Z0-9]/g,'');
+const live=()=>!!(window.SYNC&&SYNC.on);
+const NEW={'Напої':['Вода','Сік','Чай','Кава','Газований напій'],
+'Випічка і хліб':['Хліб','Батон','Булочки','Лаваш','Печиво'],
+'Солодощі':['Цукерки','Шоколад','Морозиво','Мед','Варення'],
+'Промислові товари':['Засіб для посуду','Пральний порошок','Туалетний папір','Серветки','Пакети для сміття']};
+function mig(a,rem){if((S.v||0)>=2)return a;
+ if(!(rem&&a.some(i=>/^d\d+_\d+$/.test(i.id)))){let o=Math.max(0,...a.map(i=>i.o||0));
+  Object.keys(NEW).forEach((c,ci)=>NEW[c].forEach((n,ni)=>{const id='d'+ci+'_'+ni;if(!a.some(i=>i.id===id)){const it={id,name:n,cat:c,buy:false,got:false,note:'',o:++o};a.push(it);if(rem)sp(it)}}))}
+ S.v=2;return a}
+if(!S.code){S.items=mig(S.items,false);save()}
+function setFam(c){S.code=c;S.err=null;S.v=0;if(window.SYNC)SYNC.start(c)}
+window.getItems=()=>S.items;
+let hold=false;
+window.onRemote=a=>{a=mig(a,true);a.sort((x,y)=>(x.o||0)-(y.o||0));S.items=a;S.err=null;save();const f=document.activeElement;if(f&&['ap','ac','fc'].includes(f.id))hold=true;else if(S.tab==='p')render()};
+window.onSyncErr=e=>{S.err=e&&e.code==='permission-denied'?'Немає доступу: перевірте правила Firebase.':'Помилка синхронізації. Перевірте інтернет.';if(S.tab==='p')render()};
+addEventListener('focusout',()=>{if(hold){hold=false;setTimeout(render,0)}});
+addEventListener('sync-ready',()=>{if(S.code)SYNC.start(S.code)});
+function fam(){
+ if(!window.FB_CONFIG||!window.FB_CONFIG.apiKey)return '<div class="card"><p class="hint">Спільний список ще не налаштовано: додайте налаштування Firebase у файл firebase-config.js.</p></div>';
+ if(S.code){const c=S.code.match(/.{1,4}/g).join('-');return `<div class="card"><h3>Ваша сім’я</h3><p class="hint">Передайте цей код рідним у месенджері. Не публікуйте його.</p><div class="add"><input id="fcc" readonly value="${c}" aria-label="Код сім’ї"><button class="b" data-a="cp">Копіювати</button></div><p class="hint">${S.err?E(S.err):live()?'Підключено, зміни синхронізуються.':'Підключення…'}</p><button class="b d" data-a="lv">Вийти з сім’ї</button></div>`}
+ return `<div class="card"><h3>Спільний список</h3><div class="row"><button class="b p" data-a="mk">Створити сім’ю</button></div><p class="hint">Або введіть код від рідних:</p><div class="add"><input id="fc" placeholder="XXXX-XXXX-XXXX" autocapitalize="characters"><button class="b" data-a="jn">Приєднатися</button></div></div>`}
+
+function rec(){
+ const r=cur();let h='';
+ if(r){
+  h+=`<div class="hd"><select id="sel" aria-label="Рецепт">${S.recipes.map(x=>`<option value="${x.id}"${x.id===r.id?' selected':''}>${E(x.name)}</option>`).join('')}</select>
+  <div class="k"><b title="Множник порції">×${K(r.k)}</b><button class="b" data-a="k1">Скинути</button></div></div>
+  <p class="hint">Змініть кількість будь-якого інгредієнта — решта перерахується. Зніміть галочку, якщо інгредієнт не потрібен.</p>
+  <div class="card${S.es?' ed':''}">${r.ing.map((g,i)=>`<div class="ir${g.on?'':' off'}"><input type="checkbox" data-on="${i}"${g.on?' checked':''} aria-label="Використовувати: ${E(g.n)}"><span class="nm">${E(g.n)}</span><span class="am"><input type="number" inputmode="decimal" step="any" min="0" data-amt="${i}" value="${R(g.a*r.k)}" aria-label="Кількість: ${E(g.n)}"><i>${E(g.u)}</i></span>${S.es?`<button class="x" data-a="di" data-i="${i}" aria-label="Видалити: ${E(g.n)}">×</button>`:''}</div>`).join('')||'<p class="hint">Додайте перший інгредієнт нижче.</p>'}</div>
+  ${r.note&&!S.es?`<p class="hint">${E(r.note)}</p>`:''}
+  <div class="card st"><h3>Спосіб приготування</h3>${S.es?`<input id="nt" placeholder="Режим і час, наприклад «Плов», 1 година" value="${E(r.note||'')}" aria-label="Режим і час"><textarea id="st" rows="8" placeholder="Кожен крок з нового рядка">${E(r.steps||'')}</textarea><button class="b p" data-a="ss">Зберегти</button>`:`${(r.steps||'').trim()?`<ol>${r.steps.split('\n').filter(x=>x.trim()).map(x=>`<li>${E(x)}</li>`).join('')}</ol>`:'<p class="hint">Кроків ще немає.</p>'}<button class="b" data-a="es">Змінити</button>`}</div>
+  <div class="row"><button class="b p" data-a="shop">Додати у список покупок</button><button class="b d" data-a="dr">${S.cf==='dr'?'Точно видалити?':'Видалити рецепт'}</button></div>
+  `;
+ }
+ return h+`<div style="height:112px"></div><div class="addbar two">${r?`<div class="ar"><input id="in-n" placeholder="Новий інгредієнт"><input id="in-a" type="number" inputmode="decimal" step="any" min="0" placeholder="К-сть"><select id="in-u" aria-label="Одиниця">${U.map(u=>`<option>${u}</option>`).join('')}</select><button class="b p" data-a="ai" aria-label="Додати інгредієнт">+</button></div>`:''}<div class="ar"><input id="nr" placeholder="Назва нового рецепта"><button class="b" data-a="nr">Створити</button></div></div>`;
+}
+
+function shop(){
+ const all=S.items,nb=all.filter(i=>i.buy).length,ng=all.filter(i=>i.buy&&i.got).length;
+ const cats=[...new Set(all.map(i=>i.cat))];
+ const cols=cats.map(c=>{
+  const l=all.filter(i=>i.cat===c&&(!S.only||i.buy));
+  if(!l.length)return'';
+  return `<section class="card"><h3>${E(c)}</h3>${l.map(i=>`<div class="pr${i.got?' got':''}">${S.only?'':`<label class="sw"><input type="checkbox" data-buy="${i.id}"${i.buy?' checked':''} aria-label="Купую: ${E(i.name)}"><span></span></label>`}<span class="nm">${E(i.name)}${i.note?`<small>${E(i.note)}</small>`:''}</span>${i.buy?`<button class="tk" data-got="${i.id}" aria-pressed="${i.got}" aria-label="Взято: ${E(i.name)}">✓</button>`:''}${S.edit?`<button class="x" data-a="dp" data-id="${i.id}" aria-label="Видалити: ${E(i.name)}">×</button>`:''}</div>`).join('')}</section>`}).join('');
+ const oc=cats.includes('Інше')?cats:[...cats,'Інше'];
+ return `<div class="hd"><h2>Покупки</h2><span class="cnt">Взято ${ng} з ${nb}</span><button class="b${S.code?' p':''}" data-a="fam" aria-pressed="${!!S.fm}">Сім’я${S.code?(live()?' ●':' ○'):''}</button></div>${S.fm?fam():''}
+ <div class="row tb"><button class="b${S.only?' p':''}" data-a="only" aria-pressed="${!!S.only}" title="Лише обране">Обране</button><button class="b${S.edit?' p':''}" data-a="edit" aria-pressed="${!!S.edit}">Редагувати</button><button class="b" data-a="cg" title="Зняти галочки">Зняти ✓</button><button class="b d" data-a="ca" title="Очистити вибір">${S.cf==='ca'?'Точно?':'Очистити'}</button></div>
+ <div class="cols">${cols||'<p class="hint">Нічого не обрано. Увімкніть перемикач біля продукту.</p>'}</div>
+ <div style="height:60px"></div><div class="addbar"><input id="ap" placeholder="Новий продукт"><select id="ac" aria-label="Категорія">${oc.map(c=>`<option>${E(c)}</option>`).join('')}<option value="__new">＋ Нова категорія…</option></select><button class="b p" data-a="ap" aria-label="Додати продукт">+</button></div>`;
+}
+
+const kd=s=>String(s).toLowerCase().replace(/[’'`ʼ]/g,'’').trim();
+const pd=t=>[...new Set(String(t).split(/[,;]/).map(x=>x.trim()).filter(Boolean))];
+function gl(){
+ const m={};S.sp.forEach(x=>x.d.forEach(d=>{const k=kd(d);if(k&&!m[k])m[k]=d}));
+ const ds=Object.values(m).sort((a,b)=>a.localeCompare(b,'uk'));
+ const f=ds.some(d=>kd(d)===kd(S.gf||''))?S.gf:'';
+ const L=S.sp.filter(x=>!f||x.d.some(d=>kd(d)===kd(f))).sort((a,b)=>a.n.localeCompare(b.n,'uk'));
+ const row=x=>S.ge?`<div class="sr"><div class="sf"><input data-sn="${x.id}" value="${E(x.n)}" aria-label="Назва спеції"><input data-sdd="${x.id}" value="${E(x.d.join(', '))}" aria-label="Страви"></div><button class="x" data-a="sx" data-id="${x.id}" aria-label="Видалити: ${E(x.n)}">×</button></div>`:`<div class="sr"><b>${E(x.n)}</b><span>${x.d.map(d=>`<i>${E(d)}</i>`).join('')}</span></div>`;
+ return `<div class="hd"><select id="gf" aria-label="Страва"><option value="">Усі страви</option>${ds.map(d=>`<option${kd(d)===kd(f)?' selected':''}>${E(d)}</option>`).join('')}</select><button class="b${S.ge?' p':''}" data-a="ge" aria-pressed="${!!S.ge}">Змінити</button></div>
+ <div class="card">${L.map(row).join('')||'<p class="hint">Тут поки порожньо. Додайте спецію внизу.</p>'}</div>
+ <div style="height:60px"></div><div class="addbar"><input id="sn" placeholder="Спеція"><input id="sd" placeholder="Страви через кому"><button class="b p" data-a="sa" aria-label="Додати спецію">+</button></div>`}
+function render(){
+ $('#app').innerHTML=S.tab==='r'?rec():S.tab==='g'?gl():shop();
+ document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.tab===S.tab)));
+}
+
+const A={
+ k1(){cur().k=1},
+ shop(){const r=cur(),m={};
+  r.ing.forEach(g=>{if(!g.on||!g.p)return;const k=g.p.toLowerCase(),q=R(g.a*r.k)+' '+g.u;m[k]=m[k]?{p:g.p,q:m[k].q+' + '+q}:{p:g.p,q}});
+  for(const k in m){let it=S.items.find(i=>i.name.toLowerCase()===k);
+   if(!it){it={id:uid(),name:m[k].p,cat:'Інше',buy:true,got:false,note:'',o:nxt()};S.items.push(it)}
+   it.buy=true;it.got=false;it.note=m[k].q;sp(it)}
+  S.tab='p'},
+ ai(){const n=$('#in-n').value.trim(),v=parseFloat($('#in-a').value)||1;if(!n)return;const r=cur();r.ing.push({n,a:v/r.k,u:$('#in-u').value,on:true,p:n})},
+ di(t){if(S.es&&$('#st')){cur().steps=$('#st').value;cur().note=$('#nt').value.trim()}cur().ing.splice(+t.dataset.i,1)},
+ dr(){if(S.cf!=='dr'){S.cf='dr';return}S.recipes=S.recipes.filter(x=>x.id!==cur().id);S.cur=S.recipes[0]&&S.recipes[0].id;S.cf=null},
+ nr(){const n=$('#nr').value.trim();if(!n)return;const r={id:uid(),name:n,k:1,note:'',steps:'',ing:[]};S.recipes.push(r);S.cur=r.id},
+ only(){S.only=!S.only},edit(){S.edit=!S.edit},
+ es(){S.es=true},ss(){cur().steps=$('#st').value;cur().note=$('#nt').value.trim();S.es=false},
+ cg(){S.items.forEach(i=>{if(i.got){i.got=false;sp(i)}})},
+ ca(){if(S.cf!=='ca'){S.cf='ca';return}S.items.forEach(i=>{if(i.buy||i.got||i.note){i.buy=false;i.got=false;i.note='';sp(i)}});S.cf=null},
+ ap(){const n=$('#ap').value.trim();if(!n)return;let c=$('#ac').value;
+  if(c==='__new'){c=(prompt('Назва нової категорії')||'').trim();if(!c)return}
+  c=S.items.map(i=>i.cat).find(x=>x.toLowerCase()===c.toLowerCase())||c;
+  const it={id:uid(),name:n,cat:c,buy:false,got:false,note:'',o:nxt()};S.items.push(it);sp(it)},
+ dp(t){sd(t.dataset.id);S.items=S.items.filter(i=>i.id!==t.dataset.id)},
+ fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen())},jn(){const c=norm($('#fc').value);if(c.length>=10)setFam(c)},lv(){if(window.SYNC)SYNC.stop();S.code=null;S.err=null},cp(){try{navigator.clipboard.writeText(S.code)}catch(e){}}
+};
+
+document.addEventListener('click',e=>{
+ const t=e.target.closest('[data-a],[data-got],[data-tab]');if(!t)return;
+ const d=t.dataset;
+ if(d.tab){S.tab=d.tab;S.cf=null}
+ else if(d.got){const i=S.items.find(x=>x.id===d.got);i.got=!i.got;sp(i)}
+ else{if(d.a!=='dr'&&d.a!=='ca')S.cf=null;A[d.a](t)}
+ save();render();
+});
+document.addEventListener('change',e=>{
+ const t=e.target,d=t.dataset;
+ if(t.id==='sel'){S.cur=t.value;S.es=false}
+ else if(t.id==='gf')S.gf=t.value;
+ else if(d.sn){const v=t.value.trim();if(v)S.sp.find(x=>x.id===d.sn).n=v}
+ else if(d.sdd)S.sp.find(x=>x.id===d.sdd).d=pd(t.value);
+ else if(d.on!==undefined)cur().ing[d.on].on=t.checked;
+ else if(d.amt!==undefined){const r=cur(),g=r.ing[d.amt],v=parseFloat(t.value);if(v>0&&g.a>0)r.k=v/g.a}
+ else if(d.buy){const it=S.items.find(i=>i.id===d.buy);it.buy=t.checked;if(!t.checked){it.got=false;it.note=''}sp(it)}
+ else return;
+ save();render();
+});
+render();
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+<script type="module">
+const B='https://www.gstatic.com/firebasejs/10.14.1/';
+(async()=>{
+const C=window.FB_CONFIG;if(!C||!C.apiKey)return;
+try{
+const [A,Au,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+const app=A.initializeApp(C),db=F.initializeFirestore(app,{localCache:F.persistentLocalCache()}),auth=Au.getAuth(app);
+await Au.signInAnonymously(auth).catch(()=>{});
+let un=null,ref=null;
+const mp=a=>Object.fromEntries(a.map(i=>[i.id,i]));
+window.SYNC={on:false,
+ async start(code){
+  if(un)un();ref=F.doc(db,'families',code);this.on=false;
+  try{const s=await F.getDoc(ref);if(!s.exists())await F.setDoc(ref,{items:mp(window.getItems()),created:Date.now()})}catch(e){}
+  un=F.onSnapshot(ref,s=>{if(!s.exists())return;if(!s.metadata.fromCache)this.on=true;window.onRemote(Object.values(s.data().items||{}))},e=>window.onSyncErr(e))},
+ put(it){if(ref)F.updateDoc(ref,new F.FieldPath('items',it.id),it).catch(()=>{})},
+ del(id){if(ref)F.updateDoc(ref,new F.FieldPath('items',id),F.deleteField()).catch(()=>{})},
+ stop(){if(un)un();un=null;ref=null;this.on=false}};
+window.dispatchEvent(new Event('sync-ready'));
+}catch(e){console.warn('sync off',e)}
+})();
+</script>
+</body>
+</html>
