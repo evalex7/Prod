@@ -104,12 +104,31 @@ nav button{min-height:42px;border-radius:14px;font-size:15px}
 .sw span{background:var(--sw-off)}
 .sw input:checked+span{background:var(--sw-on)}
 .sw span:after{background:#14201D;box-shadow:0 0 0 1.5px #fff}
+:root:root{--tint:color-mix(in srgb,var(--acc) 13%,var(--card))}
+nav button.gear{flex:0 0 52px;display:grid;place-items:center;padding:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sw-off);margin-left:7px}.dot.on{background:var(--sw-on)}
+nav,.addbar{transition:transform .22s ease}
+body.hide nav{transform:translateY(120%)}
+body.hide .addbar{transform:translateY(calc(100% + 140px))}
+.srow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:9px 0;border-top:1px solid var(--line)}
+h3+.srow{border-top:0}
+.srow small{display:block;color:var(--mute);font-size:12.5px;font-weight:400}
+.seg{display:flex;background:var(--tint);border-radius:12px;padding:3px;gap:2px}
+.seg button{font:inherit;font-size:13px;border:0;background:none;color:var(--mute);border-radius:9px;padding:6px 10px;min-height:32px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--acc);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.sws{display:flex;gap:9px}
+.swc{width:28px;height:28px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1.5px var(--line);cursor:pointer;padding:0}
+.swc[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink)}
+.sw.acc span{background:color-mix(in srgb,var(--mute) 40%,transparent)}
+.sw.acc span:after{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.sw.acc input:checked+span{background:var(--acc)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90%}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <main id="app"></main>
-<nav><button data-tab="p">Покупки</button><button data-tab="r">Рецепти</button><button data-tab="g">Довідка</button></nav>
+<nav><button data-tab="p">Покупки</button><button data-tab="r">Рецепти</button><button data-tab="g">Довідка</button><button data-tab="t" class="gear" aria-label="Налаштування"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></nav>
 <script src="firebase-config.js"></script>
 <script>
 const U=['г','кг','мл','л','шт','ст. л.','ч. л.','зубч.'];
@@ -134,6 +153,7 @@ r2:'Рис промийте до прозорої води. Моркву нар�
 r3:'Свинину наріжте невеликими шматками, цибулю — дрібно, моркву натріть.\nУ чашу влийте олію й обсмажте м’ясо 10 хв, помішуючи.\nДодайте цибулю з морквою, смажте ще 5–7 хв.\nГречку переберіть, промийте й висипте до м’яса, посоліть.\nЗалийте водою, перемішайте й закрийте кришку.\nГотуйте на режимі «Гречка» або «Тушкування» до сигналу, потім залиште на підігріві 10 хв.'};
 S.recipes.forEach(r=>{if(r.steps===undefined)r.steps=ST[r.id]||''});
 S.items.forEach((i,n)=>{if(i.o===undefined)i.o=n});
+S.set=Object.assign({th:'auto',ac:0,fs:1,vib:1,wl:0,hs:1,nt:1},S.set);
 if(!S.sp)S.sp=[{id:'s1',n:'Лавровий лист',d:['суп','м’ясо']},{id:'s2',n:'Чорний перець',d:['м’ясо','суп','риба','салат']},{id:'s3',n:'Паприка',d:['м’ясо','птиця','суп']},{id:'s4',n:'Кріп',d:['суп','риба','салат']},{id:'s5',n:'Базилік',d:['салат','соуси']},{id:'s6',n:'Куркума',d:['птиця','гарнір']}];
 const save=()=>{try{localStorage.setItem('mv1',JSON.stringify(S))}catch(e){}};
 const $=s=>document.querySelector(s);
@@ -158,14 +178,66 @@ if(!S.code){S.items=mig(S.items,false);save()}
 function setFam(c){S.code=c;S.err=null;S.v=0;if(window.SYNC)SYNC.start(c)}
 window.getItems=()=>S.items;
 let hold=false;
-window.onRemote=a=>{a=mig(a,true);a.sort((x,y)=>(x.o||0)-(y.o||0));S.items=a;S.err=null;save();const f=document.activeElement;if(f&&['ap','ac','fc'].includes(f.id))hold=true;else if(S.tab==='p')render()};
-window.onSyncErr=e=>{S.err=e&&e.code==='permission-denied'?'Немає доступу: перевірте правила Firebase.':'Помилка синхронізації. Перевірте інтернет.';if(S.tab==='p')render()};
+window.onRemote=(a,pend,first)=>{a=mig(a,true);a.sort((x,y)=>(x.o||0)-(y.o||0));if(!pend&&!first&&S.set.nt)notify(S.items,a);S.items=a;S.err=null;save();const f=document.activeElement;if(f&&['ap','ac','fc'].includes(f.id))hold=true;else if(S.tab==='p'||S.tab==='t')render()};
+window.onSyncErr=e=>{S.err=e&&e.code==='permission-denied'?'Немає доступу: перевірте правила Firebase.':'Помилка синхронізації. Перевірте інтернет.';if(S.tab==='p'||S.tab==='t')render()};
 addEventListener('focusout',()=>{if(hold){hold=false;setTimeout(render,0)}});
 addEventListener('sync-ready',()=>{if(S.code)SYNC.start(S.code)});
 function fam(){
  if(!window.FB_CONFIG||!window.FB_CONFIG.apiKey)return '<div class="card"><p class="hint">Спільний список ще не налаштовано: додайте налаштування Firebase у файл firebase-config.js.</p></div>';
  if(S.code){const c=S.code.match(/.{1,4}/g).join('-');return `<div class="card"><h3>Ваша сім’я</h3><p class="hint">Передайте цей код рідним у месенджері. Не публікуйте його.</p><div class="add"><input id="fcc" readonly value="${c}" aria-label="Код сім’ї"><button class="b" data-a="cp">Копіювати</button></div><p class="hint">${S.err?E(S.err):live()?'Підключено, зміни синхронізуються.':'Підключення…'}</p><button class="b d" data-a="lv">Вийти з сім’ї</button></div>`}
  return `<div class="card"><h3>Спільний список</h3><div class="row"><button class="b p" data-a="mk">Створити сім’ю</button></div><p class="hint">Або введіть код від рідних:</p><div class="add"><input id="fc" placeholder="XXXX-XXXX-XXXX" autocapitalize="characters"><button class="b" data-a="jn">Приєднатися</button></div></div>`}
+
+const ACC=[['Зелений','#0E7566','#4FC3AE'],['Синій','#2563EB','#8AB0FF'],['Фіолетовий','#7C3AED','#B9A0FF'],['Помаранчевий','#C2570C','#FFA463'],['Рожевий','#D6336C','#FF8FB3'],['Графітовий','#374151','#C5CEDB']];
+const isDark=()=>S.set.th==='dark'||(S.set.th==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);
+let wl=null;
+async function wake(){try{
+ if(S.set.wl&&document.visibilityState==='visible'&&!wl&&navigator.wakeLock){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}
+ else if(!S.set.wl&&wl){await wl.release();wl=null}}catch(e){wl=null}}
+function applySet(){const r=document.documentElement,s=S.set,a=ACC[s.ac]||ACC[0];
+ if(s.th==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',s.th);
+ r.style.setProperty('--acc',isDark()?a[2]:a[1]);
+ document.body.style.zoom=s.fs;
+ const m=document.querySelector('meta[name=theme-color]');if(m)m.content=a[1];
+ wake()}
+document.addEventListener('visibilitychange',wake);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applySet);
+const vib=()=>{if(S.set.vib&&navigator.vibrate)navigator.vibrate(12)};
+function say(m,ms){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),ms||2200)}
+const clip=t=>navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject();
+const listText=()=>{const l=S.items.filter(i=>i.buy&&!i.got);return[...new Set(l.map(i=>i.cat))].map(c=>c+':\n'+l.filter(i=>i.cat===c).map(i=>'• '+i.name+(i.note?' — '+i.note:'')).join('\n')).join('\n\n')||'Список порожній'};
+let nb={add:new Set(),rem:new Set(),got:new Set()},nt=null;
+function notify(o,n){const m=new Map(o.map(i=>[i.id,i])),ids=new Set(n.map(i=>i.id));
+ const add=x=>{if(nb.rem.has(x))nb.rem.delete(x);else nb.add.add(x)},rem=x=>{if(nb.add.has(x))nb.add.delete(x);else nb.rem.add(x)};
+ n.forEach(i=>{const p=m.get(i.id)||{};
+  if(i.buy&&!p.buy)add(i.name);else if(!i.buy&&p.buy)rem(i.name);
+  if(i.buy&&i.got&&!p.got)nb.got.add(i.name)});
+ o.forEach(i=>{if(i.buy&&!ids.has(i.id))rem(i.name)});
+ clearTimeout(nt);nt=setTimeout(flushN,2000)}
+function flushN(){const f=(st,l)=>{const a=[...st];return a.length?l+': '+a.slice(0,3).join(', ')+(a.length>3?' +'+(a.length-3):''):''};
+ const body=[f(nb.add,'Додано'),f(nb.got,'Взято'),f(nb.rem,'Прибрано')].filter(Boolean).join(' · ');
+ nb={add:new Set(),rem:new Set(),got:new Set()};if(!body)return;
+ if(document.visibilityState==='visible')say('Список оновлено — '+body,4500);
+ else if('Notification'in window&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('Список покупок оновлено',{body,icon:'icon-192.png',badge:'icon-192.png',tag:'list',renotify:true})).catch(()=>{})}
+function askN(){if(S.set.nt&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{})}
+let ly=0,hid=false;
+const showBars=()=>{if(hid){hid=false;document.body.classList.remove('hide')}};
+addEventListener('scroll',()=>{if(!S.set.hs){showBars();return}
+ const y=scrollY,d=y-ly;
+ if(innerHeight+y>=document.documentElement.scrollHeight-6){showBars();ly=y;return}
+ if(Math.abs(d)<10)return;
+ const h=d>0&&y>80;if(h!==hid){hid=h;document.body.classList.toggle('hide',h)}ly=y},{passive:true});
+addEventListener('focusin',e=>{if(e.target.closest&&e.target.closest('.addbar'))showBars()});
+function cfg(){
+ const s=S.set,seg=(k,o)=>`<div class="seg">${o.map(([v,l])=>`<button data-set="${k}" data-v="${v}" aria-pressed="${s[k]==v}">${l}</button>`).join('')}</div>`;
+ const tg=(k,l,h)=>`<label class="srow"><span>${l}${h?`<small>${h}</small>`:''}</span><span class="sw acc"><input type="checkbox" data-tg="${k}"${s[k]?' checked':''}><span></span></span></label>`;
+ return `<div class="hd"><h2>Налаштування</h2></div>
+ <div class="card"><h3>Вигляд</h3>
+  <div class="srow"><span>Тема</span>${seg('th',[['auto','Авто'],['light','Світла'],['dark','Темна']])}</div>
+  <div class="srow"><span>Розмір тексту</span>${seg('fs',[['0.92','Менший'],['1','Звичайний'],['1.12','Більший']])}</div>
+  <div class="srow"><span>Колір</span><div class="sws">${ACC.map((a,i)=>`<button class="swc" data-set="ac" data-v="${i}" aria-pressed="${s.ac==i}" aria-label="${a[0]}" style="background:${a[1]}"></button>`).join('')}</div></div></div>
+ <div class="card"><h3>Зручність</h3>${tg('vib','Вібрація при натисканні')}${tg('wl','Не вимикати екран','Корисно під час готування й покупок')}${tg('nt','Сповіщення про зміни у списку','Коли рідні додають, беруть чи прибирають продукти')}${tg('hs','Ховати панелі при прокручуванні')}</div>
+ ${fam()}
+ <div class="card"><h3>Дані</h3><div class="row"><button class="b" data-a="share">Поділитися списком покупок</button></div><div class="row"><button class="b" data-a="bk">Копіювати резервну копію</button><button class="b${S.cf==='rs'?' d':''}" data-a="rs">${S.cf==='rs'?'Точно відновити?':'Відновити з буфера'}</button></div><p class="hint">Копія містить рецепти, довідку й налаштування. Список покупок синхронізується через сім’ю.</p></div>`}
 
 function rec(){
  const r=cur();let h='';
@@ -190,7 +262,7 @@ function shop(){
   if(!l.length)return'';
   return `<section class="card"><h3>${E(c)}</h3>${l.map(i=>`<div class="pr${i.got?' got':''}">${S.only?'':`<label class="sw"><input type="checkbox" data-buy="${i.id}"${i.buy?' checked':''} aria-label="Купую: ${E(i.name)}"><span></span></label>`}<span class="nm">${E(i.name)}${i.note?`<small>${E(i.note)}</small>`:''}</span>${i.buy?`<button class="tk" data-got="${i.id}" aria-pressed="${i.got}" aria-label="Взято: ${E(i.name)}">✓</button>`:''}${S.edit?`<button class="x" data-a="dp" data-id="${i.id}" aria-label="Видалити: ${E(i.name)}">×</button>`:''}</div>`).join('')}</section>`}).join('');
  const oc=cats.includes('Інше')?cats:[...cats,'Інше'];
- return `<div class="hd"><h2>Покупки</h2><span class="cnt">Взято ${ng} з ${nb}</span><button class="b${S.code?' p':''}" data-a="fam" aria-pressed="${!!S.fm}">Сім’я${S.code?(live()?' ●':' ○'):''}</button></div>${S.fm?fam():''}
+ return `<div class="hd"><h2>Покупки</h2><span class="cnt">Взято ${ng} з ${nb}${S.code?`<span class="dot${live()?' on':''}" title="Синхронізація сім’ї"></span>`:''}</span></div>
  <div class="row tb"><button class="b${S.only?' p':''}" data-a="only" aria-pressed="${!!S.only}" title="Лише обране">Обране</button><button class="b${S.edit?' p':''}" data-a="edit" aria-pressed="${!!S.edit}">Редагувати</button><button class="b" data-a="cg" title="Зняти галочки">Зняти ✓</button><button class="b d" data-a="ca" title="Очистити вибір">${S.cf==='ca'?'Точно?':'Очистити'}</button></div>
  <div class="cols">${cols||'<p class="hint">Нічого не обрано. Увімкніть перемикач біля продукту.</p>'}</div>
  <div style="height:60px"></div><div class="addbar"><input id="ap" placeholder="Новий продукт"><select id="ac" aria-label="Категорія">${oc.map(c=>`<option>${E(c)}</option>`).join('')}<option value="__new">＋ Нова категорія…</option></select><button class="b p" data-a="ap" aria-label="Додати продукт">+</button></div>`;
@@ -208,7 +280,7 @@ function gl(){
  <div class="card">${L.map(row).join('')||'<p class="hint">Тут поки порожньо. Додайте спецію внизу.</p>'}</div>
  <div style="height:60px"></div><div class="addbar"><input id="sn" placeholder="Спеція"><input id="sd" placeholder="Страви через кому"><button class="b p" data-a="sa" aria-label="Додати спецію">+</button></div>`}
 function render(){
- $('#app').innerHTML=S.tab==='r'?rec():S.tab==='g'?gl():shop();
+ $('#app').innerHTML=S.tab==='r'?rec():S.tab==='g'?gl():S.tab==='t'?cfg():shop();
  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.tab===S.tab)));
 }
 
@@ -233,15 +305,22 @@ const A={
   c=S.items.map(i=>i.cat).find(x=>x.toLowerCase()===c.toLowerCase())||c;
   const it={id:uid(),name:n,cat:c,buy:false,got:false,note:'',o:nxt()};S.items.push(it);sp(it)},
  dp(t){sd(t.dataset.id);S.items=S.items.filter(i=>i.id!==t.dataset.id)},
- fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen())},jn(){const c=norm($('#fc').value);if(c.length>=10)setFam(c)},lv(){if(window.SYNC)SYNC.stop();S.code=null;S.err=null},cp(){try{navigator.clipboard.writeText(S.code)}catch(e){}}
+ fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen());askN()},jn(){const c=norm($('#fc').value);if(c.length>=10){setFam(c);askN()}},lv(){if(window.SYNC)SYNC.stop();S.code=null;S.err=null},cp(){clip(S.code).then(()=>say('Код скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
+ share(){const t=listText();if(navigator.share)navigator.share({title:'Список покупок',text:t}).catch(()=>{});else clip(t).then(()=>say('Список скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
+ bk(){clip(JSON.stringify({v:1,recipes:S.recipes,sp:S.sp,set:S.set})).then(()=>say('Копію скопійовано в буфер')).catch(()=>say('Не вдалося скопіювати'))},
+ rs(){if(S.cf!=='rs'){S.cf='rs';return}S.cf=null;
+  (navigator.clipboard&&navigator.clipboard.readText?navigator.clipboard.readText():Promise.reject()).then(t=>{const d=JSON.parse(t);
+   if(!(Array.isArray(d.recipes)&&d.recipes.every(r=>r&&Array.isArray(r.ing))&&Array.isArray(d.sp)&&d.sp.every(x=>x&&Array.isArray(x.d))))throw 0;
+   S.recipes=d.recipes;S.sp=d.sp;S.cur=S.recipes[0]&&S.recipes[0].id;if(d.set)Object.assign(S.set,d.set);applySet();save();render();say('Дані відновлено')}).catch(()=>say('У буфері немає коректної копії'))}
 };
 
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-a],[data-got],[data-tab]');if(!t)return;
+ const t=e.target.closest('[data-a],[data-got],[data-tab],[data-set]');if(!t)return;
  const d=t.dataset;
- if(d.tab){S.tab=d.tab;S.cf=null}
- else if(d.got){const i=S.items.find(x=>x.id===d.got);i.got=!i.got;sp(i)}
- else{if(d.a!=='dr'&&d.a!=='ca')S.cf=null;A[d.a](t)}
+ if(d.tab){S.tab=d.tab;S.cf=null;showBars();scrollTo(0,0)}
+ else if(d.got){const i=S.items.find(x=>x.id===d.got);i.got=!i.got;vib();sp(i)}
+ else if(d.set){S.set[d.set]=isNaN(+d.v)?d.v:+d.v;applySet()}
+ else{if(d.a!=='dr'&&d.a!=='ca'&&d.a!=='rs')S.cf=null;A[d.a](t)}
  save();render();
 });
 document.addEventListener('change',e=>{
@@ -250,13 +329,14 @@ document.addEventListener('change',e=>{
  else if(t.id==='gf')S.gf=t.value;
  else if(d.sn){const v=t.value.trim();if(v)S.sp.find(x=>x.id===d.sn).n=v}
  else if(d.sdd)S.sp.find(x=>x.id===d.sdd).d=pd(t.value);
+ else if(d.tg){S.set[d.tg]=t.checked?1:0;applySet();if(d.tg==='nt')askN()}
  else if(d.on!==undefined)cur().ing[d.on].on=t.checked;
  else if(d.amt!==undefined){const r=cur(),g=r.ing[d.amt],v=parseFloat(t.value);if(v>0&&g.a>0)r.k=v/g.a}
- else if(d.buy){const it=S.items.find(i=>i.id===d.buy);it.buy=t.checked;if(!t.checked){it.got=false;it.note=''}sp(it)}
+ else if(d.buy){const it=S.items.find(i=>i.id===d.buy);vib();it.buy=t.checked;if(!t.checked){it.got=false;it.note=''}sp(it)}
  else return;
  save();render();
 });
-render();
+applySet();render();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 <script type="module">
@@ -271,9 +351,9 @@ let un=null,ref=null;
 const mp=a=>Object.fromEntries(a.map(i=>[i.id,i]));
 window.SYNC={on:false,
  async start(code){
-  if(un)un();ref=F.doc(db,'families',code);this.on=false;
+  if(un)un();ref=F.doc(db,'families',code);this.on=false;let srv=false;
   try{const s=await F.getDoc(ref);if(!s.exists())await F.setDoc(ref,{items:mp(window.getItems()),created:Date.now()})}catch(e){}
-  un=F.onSnapshot(ref,s=>{if(!s.exists())return;if(!s.metadata.fromCache)this.on=true;window.onRemote(Object.values(s.data().items||{}))},e=>window.onSyncErr(e))},
+  un=F.onSnapshot(ref,s=>{if(!s.exists())return;const first=!srv;if(!s.metadata.fromCache){this.on=true;srv=true}window.onRemote(Object.values(s.data().items||{}),s.metadata.hasPendingWrites,first)},e=>window.onSyncErr(e))},
  put(it){if(ref)F.updateDoc(ref,new F.FieldPath('items',it.id),it).catch(()=>{})},
  del(id){if(ref)F.updateDoc(ref,new F.FieldPath('items',id),F.deleteField()).catch(()=>{})},
  stop(){if(un)un();un=null;ref=null;this.on=false}};
