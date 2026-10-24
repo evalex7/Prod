@@ -201,7 +201,7 @@ function applySet(){const r=document.documentElement,s=S.set,a=ACC[s.ac]||ACC[0]
  wake()}
 document.addEventListener('visibilitychange',wake);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applySet);
-const vib=()=>{if(S.set.vib&&navigator.vibrate)navigator.vibrate(12)};
+const vib=()=>{if(S.set.vib&&navigator.vibrate)navigator.vibrate(35)};
 function say(m,ms){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),ms||2200)}
 const clip=t=>navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject();
 const listText=()=>{const l=S.items.filter(i=>i.buy&&!i.got);return[...new Set(l.map(i=>i.cat))].map(c=>c+':\n'+l.filter(i=>i.cat===c).map(i=>'• '+i.name+(i.note?' — '+i.note:'')).join('\n')).join('\n\n')||'Список порожній'};
@@ -218,7 +218,7 @@ function flushN(){const f=(st,l)=>{const a=[...st];return a.length?l+': '+a.slic
  nb={add:new Set(),rem:new Set(),got:new Set()};if(!body)return;
  if(document.visibilityState==='visible')say('Список оновлено — '+body,4500);
  else if('Notification'in window&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('Список покупок оновлено',{body,icon:'icon-192.png',badge:'icon-192.png',tag:'list',renotify:true})).catch(()=>{})}
-function askN(){if(S.set.nt&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{})}
+function askN(){if(S.set.nt&&S.code&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{})}
 let ly=0,hid=false;
 const showBars=()=>{if(hid){hid=false;document.body.classList.remove('hide')}};
 addEventListener('scroll',()=>{if(!S.set.hs){showBars();return}
@@ -235,7 +235,7 @@ function cfg(){
   <div class="srow"><span>Тема</span>${seg('th',[['auto','Авто'],['light','Світла'],['dark','Темна']])}</div>
   <div class="srow"><span>Розмір тексту</span>${seg('fs',[['0.92','Менший'],['1','Звичайний'],['1.12','Більший']])}</div>
   <div class="srow"><span>Колір</span><div class="sws">${ACC.map((a,i)=>`<button class="swc" data-set="ac" data-v="${i}" aria-pressed="${s.ac==i}" aria-label="${a[0]}" style="background:${a[1]}"></button>`).join('')}</div></div></div>
- <div class="card"><h3>Зручність</h3>${tg('vib','Вібрація при натисканні')}${tg('wl','Не вимикати екран','Корисно під час готування й покупок')}${tg('nt','Сповіщення про зміни у списку','Коли рідні додають, беруть чи прибирають продукти')}${tg('hs','Ховати панелі при прокручуванні')}</div>
+ <div class="card"><h3>Зручність</h3>${tg('vib','Вібрація при натисканні')}${tg('wl','Не вимикати екран','Корисно під час готування й покупок')}${tg('nt','Сповіщення про зміни у списку',('Notification'in window&&Notification.permission==='denied')?'Заблоковано в налаштуваннях телефона':'Коли рідні додають, беруть чи прибирають продукти')}${tg('hs','Ховати панелі при прокручуванні')}<div class="row" style="margin:8px 0 4px"><button class="b" data-a="tn">Перевірити вібрацію і сповіщення</button></div></div>
  ${fam()}
  <div class="card"><h3>Дані</h3><div class="row"><button class="b" data-a="share">Поділитися списком покупок</button></div><div class="row"><button class="b" data-a="bk">Копіювати резервну копію</button><button class="b${S.cf==='rs'?' d':''}" data-a="rs">${S.cf==='rs'?'Точно відновити?':'Відновити з буфера'}</button></div><p class="hint">Копія містить рецепти, довідку й налаштування. Список покупок синхронізується через сім’ю.</p></div>`}
 
@@ -305,7 +305,13 @@ const A={
   c=S.items.map(i=>i.cat).find(x=>x.toLowerCase()===c.toLowerCase())||c;
   const it={id:uid(),name:n,cat:c,buy:false,got:false,note:'',o:nxt()};S.items.push(it);sp(it)},
  dp(t){sd(t.dataset.id);S.items=S.items.filter(i=>i.id!==t.dataset.id)},
- fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen());askN()},jn(){const c=norm($('#fc').value);if(c.length>=10){setFam(c);askN()}},lv(){if(window.SYNC)SYNC.stop();S.code=null;S.err=null},cp(){clip(S.code).then(()=>say('Код скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
+ fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen());askN()},jn(){const c=norm($('#fc').value);if(c.length>=10){setFam(c);askN()}},lv(){if(window.SYNC)SYNC.stop();S.code=null;S.err=null},tn(){
+  if(navigator.vibrate){if(S.set.vib)navigator.vibrate([40,60,40])}else say('Цей пристрій не підтримує вібрацію');
+  if(!('Notification'in window)){say('Цей браузер не підтримує сповіщення');return}
+  const go=()=>{if(Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('Перевірка сповіщень',{body:'Якщо ви це бачите, сповіщення працюють',icon:'icon-192.png',tag:'test'})).then(()=>say('Тестове сповіщення надіслано, дивіться у шторці')).catch(()=>say('Не вдалося показати сповіщення'));
+   else say(Notification.permission==='denied'?'Сповіщення заблоковані в налаштуваннях телефона':'Дозвіл на сповіщення не надано')};
+  if(Notification.permission==='default')Notification.requestPermission().then(go).catch(go);else go()},
+ cp(){clip(S.code).then(()=>say('Код скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
  share(){const t=listText();if(navigator.share)navigator.share({title:'Список покупок',text:t}).catch(()=>{});else clip(t).then(()=>say('Список скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
  bk(){clip(JSON.stringify({v:1,recipes:S.recipes,sp:S.sp,set:S.set})).then(()=>say('Копію скопійовано в буфер')).catch(()=>say('Не вдалося скопіювати'))},
  rs(){if(S.cf!=='rs'){S.cf='rs';return}S.cf=null;
@@ -317,6 +323,7 @@ const A={
 document.addEventListener('click',e=>{
  const t=e.target.closest('[data-a],[data-got],[data-tab],[data-set]');if(!t)return;
  const d=t.dataset;
+ if(d.a!=='tn')askN();
  if(d.tab){S.tab=d.tab;S.cf=null;showBars();scrollTo(0,0)}
  else if(d.got){const i=S.items.find(x=>x.id===d.got);i.got=!i.got;vib();sp(i)}
  else if(d.set){S.set[d.set]=isNaN(+d.v)?d.v:+d.v;applySet()}
