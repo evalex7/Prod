@@ -123,6 +123,9 @@ h3+.srow{border-top:0}
 .sw.acc span:after{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
 .sw.acc input:checked+span{background:var(--acc)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90%}
+.cols .card{margin:0;break-inside:auto}
+.cw{break-inside:avoid;-webkit-column-break-inside:avoid;padding-bottom:10px}
+a.b{display:inline-flex;align-items:center;text-decoration:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -153,7 +156,7 @@ r2:'Рис промийте до прозорої води. Моркву нар�
 r3:'Свинину наріжте невеликими шматками, цибулю — дрібно, моркву натріть.\nУ чашу влийте олію й обсмажте м’ясо 10 хв, помішуючи.\nДодайте цибулю з морквою, смажте ще 5–7 хв.\nГречку переберіть, промийте й висипте до м’яса, посоліть.\nЗалийте водою, перемішайте й закрийте кришку.\nГотуйте на режимі «Гречка» або «Тушкування» до сигналу, потім залиште на підігріві 10 хв.'};
 S.recipes.forEach(r=>{if(r.steps===undefined)r.steps=ST[r.id]||''});
 S.items.forEach((i,n)=>{if(i.o===undefined)i.o=n});
-S.set=Object.assign({th:'auto',ac:0,fs:1,vib:1,wl:0,hs:1,nt:1},S.set);
+S.set=Object.assign({th:'auto',ac:0,fs:1,vib:1,snd:1,wl:0,hs:1,nt:1,nf:0},S.set);
 if(!S.sp)S.sp=[{id:'s1',n:'Лавровий лист',d:['суп','м’ясо']},{id:'s2',n:'Чорний перець',d:['м’ясо','суп','риба','салат']},{id:'s3',n:'Паприка',d:['м’ясо','птиця','суп']},{id:'s4',n:'Кріп',d:['суп','риба','салат']},{id:'s5',n:'Базилік',d:['салат','соуси']},{id:'s6',n:'Куркума',d:['птиця','гарнір']}];
 const save=()=>{try{localStorage.setItem('mv1',JSON.stringify(S))}catch(e){}};
 const $=s=>document.querySelector(s);
@@ -202,6 +205,31 @@ function applySet(){const r=document.documentElement,s=S.set,a=ACC[s.ac]||ACC[0]
 document.addEventListener('visibilitychange',wake);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applySet);
 const vib=()=>{if(S.set.vib&&navigator.vibrate)navigator.vibrate(35)};
+let au=null;
+function clk(){if(!S.set.snd)return;try{
+ au=au||new (window.AudioContext||window.webkitAudioContext)();if(au.state==='suspended')au.resume();
+ const o=au.createOscillator(),g=au.createGain(),t=au.currentTime;
+ o.type='triangle';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(500,t+0.04);
+ g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.18,t+0.005);g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
+ o.connect(g);g.connect(au.destination);o.start(t);o.stop(t+0.06)}catch(e){}}
+const fb=()=>{vib();clk()};
+const rnd=n=>{const a='abcdefghijklmnopqrstuvwxyz0123456789',r=crypto.getRandomValues(new Uint8Array(n));return[...r].map(x=>a[x%36]).join('')};
+let ob={add:new Set(),rem:new Set(),got:new Set()},ot=null,DEVS={};
+function fmtN(o){const f=(st,l)=>{const a=[...st];return a.length?l+': '+a.slice(0,3).join(', ')+(a.length>3?' +'+(a.length-3):''):''};
+ return[f(o.add,'Додано'),f(o.got,'Взято'),f(o.rem,'Прибрано')].filter(Boolean).join(' · ')}
+function tell(k,n){if(!S.code)return;
+ if(k==='add'){if(ob.rem.has(n))ob.rem.delete(n);else ob.add.add(n)}
+ else if(k==='rem'){if(ob.add.has(n))ob.add.delete(n);else ob.rem.add(n)}
+ else ob.got.add(n);
+ clearTimeout(ot);ot=setTimeout(sendN,3000)}
+const ping=(t,title,msg)=>fetch('https://ntfy.sh/'+t+'/publish?title='+encodeURIComponent(title)+'&message='+encodeURIComponent(msg)+'&tags=shopping_cart',{mode:'no-cors'});
+function sendN(){const body=fmtN(ob);ob={add:new Set(),rem:new Set(),got:new Set()};if(!body)return;
+ [...new Set(Object.entries(DEVS).filter(([id,v])=>id!==S.dev&&v&&v.t).map(([,v])=>v.t))].forEach(t=>ping(t,'Список покупок оновлено',body).catch(()=>{}))}
+window.onDevs=d=>{DEVS=d;if(S.set.nf&&S.code&&S.dev&&!(d[S.dev]&&d[S.dev].t===S.tp)&&window.SYNC)SYNC.setDev(S.dev,S.tp)};
+function nfSet(){if(S.set.nf){if(!S.dev){S.dev=rnd(8);S.tp='mvl'+rnd(26)}if(window.SYNC)SYNC.setDev(S.dev,S.tp)}else if(S.dev&&window.SYNC)SYNC.delDev(S.dev)}
+function ntf(){
+ if(!S.code)return '<div class="card"><h3>Сповіщення поза застосунком</h3><p class="hint">Спершу створіть сім’ю або приєднайтесь до неї.</p></div>';
+ return `<div class="card"><h3>Сповіщення поза застосунком</h3><label class="srow"><span>Через ntfy<small>Приходять, навіть коли застосунок закритий</small></span><span class="sw acc"><input type="checkbox" data-tg="nf"${S.set.nf?' checked':''}><span></span></span></label>${S.set.nf&&S.tp?`<p class="hint">1. Встановіть застосунок ntfy (Google Play або F-Droid).<br>2. Підпишіться на вашу тему кнопкою нижче. Сервер: ntfy.sh.</p><div class="add"><input id="ntp" readonly value="${S.tp}" aria-label="Ваша тема ntfy"><button class="b" data-a="ntc">Копіювати</button></div><div class="row" style="margin-top:8px"><a class="b p" href="ntfy://ntfy.sh/${S.tp}">Підписатись у ntfy</a><button class="b" data-a="ntt">Перевірити</button></div>`:''}</div>`}
 function say(m,ms){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),ms||2200)}
 const clip=t=>navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject();
 const listText=()=>{const l=S.items.filter(i=>i.buy&&!i.got);return[...new Set(l.map(i=>i.cat))].map(c=>c+':\n'+l.filter(i=>i.cat===c).map(i=>'• '+i.name+(i.note?' — '+i.note:'')).join('\n')).join('\n\n')||'Список порожній'};
@@ -217,7 +245,7 @@ function flushN(){const f=(st,l)=>{const a=[...st];return a.length?l+': '+a.slic
  const body=[f(nb.add,'Додано'),f(nb.got,'Взято'),f(nb.rem,'Прибрано')].filter(Boolean).join(' · ');
  nb={add:new Set(),rem:new Set(),got:new Set()};if(!body)return;
  if(document.visibilityState==='visible')say('Список оновлено — '+body,4500);
- else if('Notification'in window&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('Список покупок оновлено',{body,icon:'icon-192.png',badge:'icon-192.png',tag:'list',renotify:true})).catch(()=>{})}
+ else if(!S.set.nf&&'Notification'in window&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('Список покупок оновлено',{body,icon:'icon-192.png',badge:'icon-192.png',tag:'list',renotify:true})).catch(()=>{})}
 function askN(){if(S.set.nt&&S.code&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission().catch(()=>{})}
 let ly=0,hid=false;
 const showBars=()=>{if(hid){hid=false;document.body.classList.remove('hide')}};
@@ -235,8 +263,8 @@ function cfg(){
   <div class="srow"><span>Тема</span>${seg('th',[['auto','Авто'],['light','Світла'],['dark','Темна']])}</div>
   <div class="srow"><span>Розмір тексту</span>${seg('fs',[['0.92','Менший'],['1','Звичайний'],['1.12','Більший']])}</div>
   <div class="srow"><span>Колір</span><div class="sws">${ACC.map((a,i)=>`<button class="swc" data-set="ac" data-v="${i}" aria-pressed="${s.ac==i}" aria-label="${a[0]}" style="background:${a[1]}"></button>`).join('')}</div></div></div>
- <div class="card"><h3>Зручність</h3>${tg('vib','Вібрація при натисканні')}${tg('wl','Не вимикати екран','Корисно під час готування й покупок')}${tg('nt','Сповіщення про зміни у списку',('Notification'in window&&Notification.permission==='denied')?'Заблоковано в налаштуваннях телефона':'Коли рідні додають, беруть чи прибирають продукти')}${tg('hs','Ховати панелі при прокручуванні')}<div class="row" style="margin:8px 0 4px"><button class="b" data-a="tn">Перевірити вібрацію і сповіщення</button></div></div>
- ${fam()}
+ <div class="card"><h3>Зручність</h3>${tg('vib','Вібрація при натисканні')}${tg('snd','Звук клацання при натисканні')}${tg('wl','Не вимикати екран','Корисно під час готування й покупок')}${tg('nt','Сповіщення про зміни у списку',('Notification'in window&&Notification.permission==='denied')?'Заблоковано в налаштуваннях телефона':'Коли рідні додають, беруть чи прибирають продукти')}${tg('hs','Ховати панелі при прокручуванні')}<div class="row" style="margin:8px 0 4px"><button class="b" data-a="tn">Перевірити вібрацію, звук і сповіщення</button></div></div>
+ ${fam()}${ntf()}
  <div class="card"><h3>Дані</h3><div class="row"><button class="b" data-a="share">Поділитися списком покупок</button></div><div class="row"><button class="b" data-a="bk">Копіювати резервну копію</button><button class="b${S.cf==='rs'?' d':''}" data-a="rs">${S.cf==='rs'?'Точно відновити?':'Відновити з буфера'}</button></div><p class="hint">Копія містить рецепти, довідку й налаштування. Список покупок синхронізується через сім’ю.</p></div>`}
 
 function rec(){
@@ -260,7 +288,7 @@ function shop(){
  const cols=cats.map(c=>{
   const l=all.filter(i=>i.cat===c&&(!S.only||i.buy));
   if(!l.length)return'';
-  return `<section class="card"><h3>${E(c)}</h3>${l.map(i=>`<div class="pr${i.got?' got':''}">${S.only?'':`<label class="sw"><input type="checkbox" data-buy="${i.id}"${i.buy?' checked':''} aria-label="Купую: ${E(i.name)}"><span></span></label>`}<span class="nm">${E(i.name)}${i.note?`<small>${E(i.note)}</small>`:''}</span>${i.buy?`<button class="tk" data-got="${i.id}" aria-pressed="${i.got}" aria-label="Взято: ${E(i.name)}">✓</button>`:''}${S.edit?`<button class="x" data-a="dp" data-id="${i.id}" aria-label="Видалити: ${E(i.name)}">×</button>`:''}</div>`).join('')}</section>`}).join('');
+  return `<div class="cw"><section class="card"><h3>${E(c)}</h3>${l.map(i=>`<div class="pr${i.got?' got':''}">${S.only?'':`<label class="sw"><input type="checkbox" data-buy="${i.id}"${i.buy?' checked':''} aria-label="Купую: ${E(i.name)}"><span></span></label>`}<span class="nm">${E(i.name)}${i.note?`<small>${E(i.note)}</small>`:''}</span>${i.buy?`<button class="tk" data-got="${i.id}" aria-pressed="${i.got}" aria-label="Взято: ${E(i.name)}">✓</button>`:''}${S.edit?`<button class="x" data-a="dp" data-id="${i.id}" aria-label="Видалити: ${E(i.name)}">×</button>`:''}</div>`).join('')}</section></div>`}).join('');
  const oc=cats.includes('Інше')?cats:[...cats,'Інше'];
  return `<div class="hd"><h2>Покупки</h2><span class="cnt">Взято ${ng} з ${nb}${S.code?`<span class="dot${live()?' on':''}" title="Синхронізація сім’ї"></span>`:''}</span></div>
  <div class="row tb"><button class="b${S.only?' p':''}" data-a="only" aria-pressed="${!!S.only}" title="Лише обране">Обране</button><button class="b${S.edit?' p':''}" data-a="edit" aria-pressed="${!!S.edit}">Редагувати</button><button class="b" data-a="cg" title="Зняти галочки">Зняти ✓</button><button class="b d" data-a="ca" title="Очистити вибір">${S.cf==='ca'?'Точно?':'Очистити'}</button></div>
@@ -290,7 +318,7 @@ const A={
   r.ing.forEach(g=>{if(!g.on||!g.p)return;const k=g.p.toLowerCase(),q=R(g.a*r.k)+' '+g.u;m[k]=m[k]?{p:g.p,q:m[k].q+' + '+q}:{p:g.p,q}});
   for(const k in m){let it=S.items.find(i=>i.name.toLowerCase()===k);
    if(!it){it={id:uid(),name:m[k].p,cat:'Інше',buy:true,got:false,note:'',o:nxt()};S.items.push(it)}
-   it.buy=true;it.got=false;it.note=m[k].q;sp(it)}
+   it.buy=true;it.got=false;it.note=m[k].q;tell('add',it.name);sp(it)}
   S.tab='p'},
  ai(){const n=$('#in-n').value.trim(),v=parseFloat($('#in-a').value)||1;if(!n)return;const r=cur();r.ing.push({n,a:v/r.k,u:$('#in-u').value,on:true,p:n})},
  di(t){if(S.es&&$('#st')){cur().steps=$('#st').value;cur().note=$('#nt').value.trim()}cur().ing.splice(+t.dataset.i,1)},
@@ -305,8 +333,10 @@ const A={
   c=S.items.map(i=>i.cat).find(x=>x.toLowerCase()===c.toLowerCase())||c;
   const it={id:uid(),name:n,cat:c,buy:false,got:false,note:'',o:nxt()};S.items.push(it);sp(it)},
  dp(t){sd(t.dataset.id);S.items=S.items.filter(i=>i.id!==t.dataset.id)},
- fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen());askN()},jn(){const c=norm($('#fc').value);if(c.length>=10){setFam(c);askN()}},lv(){if(window.SYNC)SYNC.stop();S.code=null;S.err=null},tn(){
-  if(navigator.vibrate){if(S.set.vib)navigator.vibrate([40,60,40])}else say('Цей пристрій не підтримує вібрацію');
+ fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n)S.sp.push({id:uid(),n,d:pd($('#sd').value)})},sx(t){S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen());askN()},jn(){const c=norm($('#fc').value);if(c.length>=10){setFam(c);askN()}},lv(){if(window.SYNC){if(S.dev)SYNC.delDev(S.dev);SYNC.stop()}S.code=null;S.err=null},ntc(){clip(S.tp).then(()=>say('Тему скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
+ ntt(){ping(S.tp,'Перевірка ntfy','Якщо ви це бачите, сповіщення працюють').then(()=>say('Тестове сповіщення надіслано. Якщо воно не прийшло, перевірте підписку в ntfy',4500)).catch(()=>say('Не вдалося зв’язатися з ntfy'))},
+ tn(){
+  clk();if(navigator.vibrate){if(S.set.vib)navigator.vibrate([40,60,40])}else say('Цей пристрій не підтримує вібрацію');
   if(!('Notification'in window)){say('Цей браузер не підтримує сповіщення');return}
   const go=()=>{if(Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('Перевірка сповіщень',{body:'Якщо ви це бачите, сповіщення працюють',icon:'icon-192.png',tag:'test'})).then(()=>say('Тестове сповіщення надіслано, дивіться у шторці')).catch(()=>say('Не вдалося показати сповіщення'));
    else say(Notification.permission==='denied'?'Сповіщення заблоковані в налаштуваннях телефона':'Дозвіл на сповіщення не надано')};
@@ -325,7 +355,7 @@ document.addEventListener('click',e=>{
  const d=t.dataset;
  if(d.a!=='tn')askN();
  if(d.tab){S.tab=d.tab;S.cf=null;showBars();scrollTo(0,0)}
- else if(d.got){const i=S.items.find(x=>x.id===d.got);i.got=!i.got;vib();sp(i)}
+ else if(d.got){const i=S.items.find(x=>x.id===d.got);i.got=!i.got;fb();if(i.got)tell('got',i.name);sp(i)}
  else if(d.set){S.set[d.set]=isNaN(+d.v)?d.v:+d.v;applySet()}
  else{if(d.a!=='dr'&&d.a!=='ca'&&d.a!=='rs')S.cf=null;A[d.a](t)}
  save();render();
@@ -336,10 +366,10 @@ document.addEventListener('change',e=>{
  else if(t.id==='gf')S.gf=t.value;
  else if(d.sn){const v=t.value.trim();if(v)S.sp.find(x=>x.id===d.sn).n=v}
  else if(d.sdd)S.sp.find(x=>x.id===d.sdd).d=pd(t.value);
- else if(d.tg){S.set[d.tg]=t.checked?1:0;applySet();if(d.tg==='nt')askN()}
+ else if(d.tg){S.set[d.tg]=t.checked?1:0;applySet();if(d.tg==='nt')askN();if(d.tg==='nf')nfSet()}
  else if(d.on!==undefined)cur().ing[d.on].on=t.checked;
  else if(d.amt!==undefined){const r=cur(),g=r.ing[d.amt],v=parseFloat(t.value);if(v>0&&g.a>0)r.k=v/g.a}
- else if(d.buy){const it=S.items.find(i=>i.id===d.buy);vib();it.buy=t.checked;if(!t.checked){it.got=false;it.note=''}sp(it)}
+ else if(d.buy){const it=S.items.find(i=>i.id===d.buy);fb();it.buy=t.checked;tell(t.checked?'add':'rem',it.name);if(!t.checked){it.got=false;it.note=''}sp(it)}
  else return;
  save();render();
 });
@@ -360,9 +390,11 @@ window.SYNC={on:false,
  async start(code){
   if(un)un();ref=F.doc(db,'families',code);this.on=false;let srv=false;
   try{const s=await F.getDoc(ref);if(!s.exists())await F.setDoc(ref,{items:mp(window.getItems()),created:Date.now()})}catch(e){}
-  un=F.onSnapshot(ref,s=>{if(!s.exists())return;const first=!srv;if(!s.metadata.fromCache){this.on=true;srv=true}window.onRemote(Object.values(s.data().items||{}),s.metadata.hasPendingWrites,first)},e=>window.onSyncErr(e))},
+  un=F.onSnapshot(ref,s=>{if(!s.exists())return;const first=!srv;if(!s.metadata.fromCache){this.on=true;srv=true}window.onRemote(Object.values(s.data().items||{}),s.metadata.hasPendingWrites,first);window.onDevs&&window.onDevs(s.data().devs||{})},e=>window.onSyncErr(e))},
  put(it){if(ref)F.updateDoc(ref,new F.FieldPath('items',it.id),it).catch(()=>{})},
  del(id){if(ref)F.updateDoc(ref,new F.FieldPath('items',id),F.deleteField()).catch(()=>{})},
+ setDev(id,t){if(ref)F.updateDoc(ref,new F.FieldPath('devs',id),{t,ts:Date.now()}).catch(()=>{})},
+ delDev(id){if(ref)F.updateDoc(ref,new F.FieldPath('devs',id),F.deleteField()).catch(()=>{})},
  stop(){if(un)un();un=null;ref=null;this.on=false}};
 window.dispatchEvent(new Event('sync-ready'));
 }catch(e){console.warn('sync off',e)}
