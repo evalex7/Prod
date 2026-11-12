@@ -127,6 +127,9 @@ h3+.srow{border-top:0}
 .cols .card{margin:0;break-inside:auto}
 .cw{break-inside:avoid;-webkit-column-break-inside:avoid;padding-bottom:10px}
 a.b{display:inline-flex;align-items:center;text-decoration:none}
+label.srow{flex-wrap:nowrap}
+label.srow>span:first-child{flex:1 1 auto;min-width:0}
+.srow .seg,.srow .sws{margin-left:auto}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -165,6 +168,7 @@ const $=s=>document.querySelector(s);
 const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const R=x=>x>=10?Math.round(x):Math.round(x*10)/10;
 const K=k=>String(Math.round(k*100)/100).replace('.',',');
+const VER='2026-11-11';
 const cur=()=>S.recipes.find(r=>r.id===S.cur)||S.recipes[0];
 const sp=it=>{window.SYNC&&SYNC.put(it)},sd=id=>{window.SYNC&&SYNC.del(id)};
 const wr=r=>{const o=JSON.parse(JSON.stringify(r));delete o.k;(o.ing||[]).forEach(g=>{g.on=true});return o};
@@ -187,7 +191,7 @@ function setFam(c){S.code=c;S.err=null;S.v=0;S.rs1=0;if(window.SYNC)SYNC.start(c
 window.getItems=()=>S.items;
 let hold=false;
 window.onRemote=(a,pend,first)=>{a=mig(a,true);a.sort((x,y)=>(x.o||0)-(y.o||0));if(!pend&&!first&&S.set.nt)notify(S.items,a);S.items=a;S.err=null;save();const f=document.activeElement;if(f&&['ap','ac','fc'].includes(f.id))hold=true;else if(S.tab==='p'||S.tab==='t')render()};
-window.onData=(R,P,fc)=>{R=R||{};P=P||{};const first=!S.rs1;if(first&&fc)return;
+const od=(R,P,fc)=>{R=R||{};P=P||{};const first=!S.rs1;if(first&&fc)return;S.cr=Object.keys(R).length;S.cs=Object.keys(P).length;
  const loc=new Map(S.recipes.map(r=>[r.id,r]));
  const rec=Object.values(R).map(r=>{const o=loc.get(r.id),m=o?Object.fromEntries((o.ing||[]).map(g=>[g.n,g.on])):{};return{...r,k:o?o.k:1,ing:(r.ing||[]).map(g=>({...g,on:m[g.n]!==false}))}});
  const spi=Object.values(P);
@@ -196,12 +200,13 @@ window.onData=(R,P,fc)=>{R=R||{};P=P||{};const first=!S.rs1;if(first&&fc)return;
  S.recipes=rec;S.sp=spi;if(!S.recipes.find(r=>r.id===S.cur))S.cur=S.recipes[0]&&S.recipes[0].id;
  save();const f=document.activeElement;
  if(S.es||S.ge||(f&&/INPUT|TEXTAREA|SELECT/.test(f.tagName)&&f.type!=='checkbox'))hold=true;else if(S.tab==='r'||S.tab==='g')render()};
+window.onData=(R,P,fc)=>{try{od(R,P,fc);S.rc=Object.keys(R||{}).length}catch(e){S.err='Помилка синхронізації рецептів: '+(e&&e.message||e);if(S.tab==='t')render()}};
 window.onSyncErr=e=>{S.err=e&&e.code==='permission-denied'?'Немає доступу: перевірте правила Firebase.':'Помилка синхронізації. Перевірте інтернет.';if(S.tab==='p'||S.tab==='t')render()};
 addEventListener('focusout',()=>{if(hold){hold=false;setTimeout(render,0)}});
 addEventListener('sync-ready',()=>{if(S.code)SYNC.start(S.code)});
 function fam(){
  if(!window.FB_CONFIG||!window.FB_CONFIG.apiKey)return '<div class="card"><p class="hint">Спільний список ще не налаштовано: додайте налаштування Firebase у файл firebase-config.js.</p></div>';
- if(S.code){const c=S.code.match(/.{1,4}/g).join('-');return `<div class="card"><h3>Ваша сім’я</h3><p class="hint">Передайте цей код рідним у месенджері. Не публікуйте його.</p><div class="add"><input id="fcc" readonly value="${c}" aria-label="Код сім’ї"><button class="b" data-a="cp">Копіювати</button></div><p class="hint">${S.err?E(S.err):live()?'Підключено, зміни синхронізуються.':'Підключення…'}</p><button class="b d" data-a="lv">Вийти з сім’ї</button></div>`}
+ if(S.code){const c=S.code.match(/.{1,4}/g).join('-');return `<div class="card"><h3>Ваша сім’я</h3><p class="hint">Передайте цей код рідним у месенджері. Не публікуйте його.</p><div class="add"><input id="fcc" readonly value="${c}" aria-label="Код сім’ї"><button class="b" data-a="cp">Копіювати</button></div><p class="hint">${S.err?E(S.err):live()?'Підключено, зміни синхронізуються.'+(S.rc!==undefined?' Рецептів у сім’ї: '+S.rc+'.':''):'Підключення…'}</p><button class="b d" data-a="lv">Вийти з сім’ї</button></div>`}
  return `<div class="card"><h3>Спільний список</h3><div class="row"><button class="b p" data-a="mk">Створити сім’ю</button></div><p class="hint">Або введіть код від рідних:</p><div class="add"><input id="fc" placeholder="XXXX-XXXX-XXXX" autocapitalize="characters"><button class="b" data-a="jn">Приєднатися</button></div></div>`}
 
 const ACC=[['Зелений','#0E7566','#4FC3AE'],['Синій','#2563EB','#8AB0FF'],['Фіолетовий','#7C3AED','#B9A0FF'],['Помаранчевий','#C2570C','#FFA463'],['Рожевий','#D6336C','#FF8FB3'],['Графітовий','#374151','#C5CEDB']];
@@ -279,7 +284,7 @@ function cfg(){
   <div class="srow"><span>Колір</span><div class="sws">${ACC.map((a,i)=>`<button class="swc" data-set="ac" data-v="${i}" aria-pressed="${s.ac==i}" aria-label="${a[0]}" style="background:${a[1]}"></button>`).join('')}</div></div></div>
  <div class="card"><h3>Зручність</h3>${tg('vib','Вібрація при натисканні')}${tg('snd','Звук клацання при натисканні')}${tg('wl','Не вимикати екран','Корисно під час готування й покупок')}${tg('nt','Сповіщення про зміни у списку',('Notification'in window&&Notification.permission==='denied')?'Заблоковано в налаштуваннях телефона':'Коли рідні додають, беруть чи прибирають продукти')}${tg('hs','Ховати панелі при прокручуванні')}<div class="row" style="margin:8px 0 4px"><button class="b" data-a="tn">Перевірити вібрацію, звук і сповіщення</button></div></div>
  ${fam()}${ntf()}
- <div class="card"><h3>Дані</h3><div class="row"><button class="b" data-a="share">Поділитися списком покупок</button></div><div class="row"><button class="b" data-a="bk">Копіювати резервну копію</button><button class="b${S.cf==='rs'?' d':''}" data-a="rs">${S.cf==='rs'?'Точно відновити?':'Відновити з буфера'}</button></div><p class="hint">Список покупок, рецепти й довідка синхронізуються через сім’ю, а вигляд застосунку окремий на кожному пристрої. Копія зберігає рецепти, довідку й налаштування.</p></div>`}
+ <div class="card"><h3>Дані</h3><div class="row"><button class="b" data-a="share">Поділитися списком покупок</button></div><div class="row"><button class="b" data-a="bk">Копіювати резервну копію</button><button class="b${S.cf==='rs'?' d':''}" data-a="rs">${S.cf==='rs'?'Точно відновити?':'Відновити з буфера'}</button></div><p class="hint">Список покупок, рецепти й довідка синхронізуються через сім’ю, а вигляд застосунку окремий на кожному пристрої. Копія зберігає рецепти, довідку й налаштування.</p><p class="hint">Версія застосунку: ${VER}${S.code?` · у хмарі: рецептів ${S.cr==null?'—':S.cr}, спецій ${S.cs==null?'—':S.cs}`:''}</p><div class="row"><button class="b" data-a="ur">Оновити застосунок</button></div></div>`}
 
 function rec(){
  const r=cur();let h='';
@@ -349,6 +354,7 @@ const A={
  dp(t){sd(t.dataset.id);S.items=S.items.filter(i=>i.id!==t.dataset.id)},
  fam(){S.fm=!S.fm},ge(){S.ge=!S.ge},sa(){const n=$('#sn').value.trim();if(n){const x={id:uid(),n,d:pd($('#sd').value)};S.sp.push(x);xp(x)}},sx(t){xd(t.dataset.id);S.sp=S.sp.filter(x=>x.id!==t.dataset.id)},mk(){setFam(gen());askN()},jn(){const c=norm($('#fc').value);if(c.length>=10){setFam(c);askN()}},lv(){if(window.SYNC){if(S.dev)SYNC.delDev(S.dev);SYNC.stop()}S.code=null;S.err=null},ntc(){clip(S.tp).then(()=>say('Тему скопійовано')).catch(()=>say('Не вдалося скопіювати'))},
  ntt(){ping(S.tp,'Перевірка ntfy','Якщо ви це бачите, сповіщення працюють').then(()=>say('Тестове сповіщення надіслано. Якщо воно не прийшло, перевірте підписку в ntfy',4500)).catch(()=>say('Не вдалося зв’язатися з ntfy'))},
+ ur(){say('Оновлюю…');(window.caches?caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))):Promise.resolve()).then(()=>navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(r=>Promise.all(r.map(x=>x.unregister()))):0).catch(()=>{}).then(()=>location.reload())},
  tn(){
   clk();if(navigator.vibrate){if(S.set.vib)navigator.vibrate([40,60,40])}else say('Цей пристрій не підтримує вібрацію');
   if(!('Notification'in window)){say('Цей браузер не підтримує сповіщення');return}
@@ -388,7 +394,7 @@ document.addEventListener('change',e=>{
  save();render();
 });
 applySet();render();
-if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{}));
 </script>
 <script type="module">
 const B='https://www.gstatic.com/firebasejs/10.14.1/';
